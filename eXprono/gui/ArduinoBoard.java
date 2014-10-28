@@ -1,40 +1,55 @@
 package eXprono.gui;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
+import jssc.SerialPortList;
 
 
 public class ArduinoBoard {
 	
-	public enum Boards{
-		UNO("Uno", 14, 6, 1, 3, 5, 6, 9, 10, 11),
-		LEONARDO("Leonardo", 14, 6, 1, 5, 6, 9, 10, 11, 13),
-		DUE("Due", 54, 12, 4, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
-		DUEMILANOVE("Duemilanove", 14, 6, 1, 3, 5, 6, 9, 10, 11),
-		YUN("Yun", 20, 12, 1, 3, 5, 6, 9, 10, 11, 13),
-		ZERO("Zero", 14, 6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
-		MICRO("Micro", 20, 12, 1, 3, 5, 6, 9, 10, 11, 13),
-		MEGAADK("Mega", 54, 16, 4, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
-		ETHERNET("Ethernet", 10, 6, 1, 3, 5, 6, 9, 10),
-		Mega2560("Mega", 54, 16, 4, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
-		NANO("Nano", 14, 8, 1, 3, 5, 6, 9, 10, 11),
-		FIO("Fio", 14, 8, 1, 3, 5, 6, 9, 10, 11);
+	public static enum Boards{
+		UNO("Uno", "Uno", 14, 6, 1, 3, 5, 6, 9, 10, 11),
+		LEONARDO("Leonardo", "Leonardo", 14, 6, 1, 5, 6, 9, 10, 11, 13),
+		DUE("Due", "Due", 54, 12, 4, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+		//DUEMILANOVE("Duemilanove", "Duemilanove", 14, 6, 1, 3, 5, 6, 9, 10, 11),
+		YUN("Yun", "Yun", 20, 12, 1, 3, 5, 6, 9, 10, 11, 13),
+		//ZERO("Zero", "Zero", 14, 6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+		MICRO("Micro", "Micro", 20, 12, 1, 3, 5, 6, 9, 10, 11, 13),
+		MEGAADK("Mega ADK", "Mega", 54, 16, 4, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+		ETHERNET("Ethernet", "Ethernet", 10, 6, 1, 3, 5, 6, 9, 10),
+		MEGA2560("Mega 2560", "Mega", 54, 16, 4, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+		NANO("Nano", "Nano", 14, 8, 1, 3, 5, 6, 9, 10, 11),
+		FIO("Fio", "Fio", 14, 8, 1, 3, 5, 6, 9, 10, 11);
 		
 		public int digitalPins;
 		public int analogPins;
 		public int serials;
 		public int[] pwmPins;
 		public String prefix;
+		public String name;
 		
-		private Boards(String filePrefix, int digitalPins, int analogPins, int serials, int... pwmPins) {
+		private Boards(String name, String filePrefix, int digitalPins, int analogPins, int serials, int... pwmPins) {
+			this.name = name;
 			this.digitalPins = digitalPins;
 			this.analogPins = analogPins;
 			this.serials = serials;
 			this.pwmPins = pwmPins;
 			this.prefix = filePrefix;
+		}
+		
+		public static Boards getBoardFromName(String name) {
+			for(int i = 0; i < values().length; i++) {
+				if(values()[i].name.equals(name)) {
+					return values()[i];
+				}
+			}
+			return null;
 		}
 	}
 	
@@ -43,19 +58,23 @@ public class ArduinoBoard {
 	private static final int compStartByte = 36;
 	private static final int arduinoStartByte = 64;
 	
-	public final String imageFile;
+	public final File imageFile;
+	public BufferedImage image;
 	public final String dataFile;
 	
 	private boolean[] digitalStates;
+	private int[] pwmStates;
 	private int[] digitalModes;
 	private int[] analogStates;
-	private int[] pwmPins;
-	private List<Integer> pwmStates;
 	private boolean[] toSerialForward;
 	
 	public ArduinoBoard(String comPort, Boards board) {
 		try {
-			serial = new SerialPort(comPort);
+			for(String port:SerialPortList.getPortNames()) {
+				if(port.equals(comPort)) {
+					serial = new SerialPort(port);
+				}
+			}
 			serial.openPort();
 			serial.setParams(SerialPort.BAUDRATE_19200,
 					SerialPort.DATABITS_8,
@@ -64,18 +83,19 @@ public class ArduinoBoard {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+				
 		digitalModes = new int[board.digitalPins];
 		digitalStates = new boolean[board.digitalPins];
+		pwmStates = new int[board.digitalPins];
 		analogStates = new int[board.analogPins];
 		toSerialForward = new boolean[board.serials];
-		pwmPins = board.pwmPins;
-		pwmStates = new ArrayList<Integer>();
-		for(int i: pwmPins) {
-			pwmStates.set(i, 0);
+		imageFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + ".png"); // Also get the folder
+		try {
+			image = ImageIO.read(imageFile);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		imageFile = board.prefix + ".png"; // Also get the folder
-		dataFile = board.prefix + ".txt"; // Also get the folder
+		dataFile = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + ".txt"; // Also get the folder
 	}
 	
 	public void digitalWrite(int pin, boolean value) {
@@ -117,7 +137,7 @@ public class ArduinoBoard {
 		} catch(SerialPortException e) {
 			e.printStackTrace();
 		}
-		pwmStates.set(pin, value);
+		pwmStates[pin] = value;
 	}
 	
 	public int analogRead(int pin) {

@@ -36,6 +36,6 @@ public class Servo {
 			angle = 180;
 		}
 		this.angle = angle;
-		pulse = (minPulse )
+		
 	}
 }

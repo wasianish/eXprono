@@ -21,27 +21,25 @@ public class SelectorGUI extends JFrame{
 	 * Adding in private fields of 
 	 * the components
 	 */
-<<<<<<< HEAD
 	public JFrame frameSelector;
-=======
->>>>>>> cb02923a8f8ffac00cd425984afe05a5bd054173
-	private JComboBox<String> comboPort;
+	public JComboBox<String> comboPort;
 	private String[] portStrings;
 	private JLabel textPort;
 	private JLabel textBoard;
-	private String[] boardStrings = {"Uno", "Leonardo", "Due", "Yun", "Tre", 
-		"Zero","Micro","Esplora", "Mega ADK","Ethernet","Mega2560", 
-		"Robot", "Nano", "Fio"};
-	private JComboBox<String> comboBoard;
+	private String[] boardStrings;
+	public JComboBox<String> comboBoard;
 	private JLabel iconLabel;
-	private JButton btnSubmit;
+	public JButton btnSubmit;
 	
 	/**
 	 * Create the application.
 	 */
 	public SelectorGUI() {
 		
-		GUIListener listener = new GUIListener();
+		boardStrings = new String[ArduinoBoard.Boards.values().length];
+		for(int i = 0; i < ArduinoBoard.Boards.values().length; i++) {
+			boardStrings[i] = ArduinoBoard.Boards.values()[i].name;
+		}
 		
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(SelectorGUI.class.getResource("/javax/swing/plaf/metal/icons/Error.gif")));
 		this.setResizable(false);
@@ -76,9 +74,9 @@ public class SelectorGUI extends JFrame{
 		iconLabel.setBounds(36, 11, 161, 74);
 		this.getContentPane().add(iconLabel);
 		
-		btnSubmit = new JButton("Submit");
+		btnSubmit = new JButton("Start");
 		btnSubmit.setBounds(36, 226, 155, 30);
-		btnSubmit.addActionListener(listener);
+		btnSubmit.addActionListener(Main.listener);
 		this.getContentPane().add(btnSubmit);
 		
 		this.setVisible(true);
