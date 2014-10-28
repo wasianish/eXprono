@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.border.TitledBorder;
+import javax.swing.JButton;
 
 public class ArduinoGUI {
 
@@ -24,6 +25,8 @@ public class ArduinoGUI {
 	private JLabel lblValue;
 	private JLabel lblType;
 	private JSlider sliderPWM;
+	private JButton btnIO;
+	private JButton btnHighLow;
 	
 	/**
 	 * Launch the application.
@@ -53,9 +56,9 @@ public class ArduinoGUI {
 	 */
 	private void initialize() {
 		frameArduino = new JFrame();
+		frameArduino.setResizable(false);
 		frameArduino.setIconImage(Toolkit.getDefaultToolkit().getImage(ArduinoGUI.class.getResource("/javax/swing/plaf/metal/icons/Error.gif")));
 		frameArduino.setTitle("eXprono");
-		frameArduino.setResizable(false);
 		frameArduino.setBounds(100, 100, 544, 510);
 		frameArduino.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameArduino.getContentPane().setLayout(null);
@@ -97,7 +100,7 @@ public class ArduinoGUI {
 		sliderPWM.setPaintLabels(true);
 		sliderPWM.setMaximum(255);
 		sliderPWM.setMajorTickSpacing(255);
-		sliderPWM.setBounds(20, 415, 200, 50);
+		sliderPWM.setBounds(20, 415, 215, 50);
 		frameArduino.getContentPane().add(sliderPWM);
 		
 		JLabel lblPinNumber = new JLabel("N/A");
@@ -119,5 +122,15 @@ public class ArduinoGUI {
 		lblPinValue.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		lblPinValue.setBounds(117, 391, 80, 14);
 		frameArduino.getContentPane().add(lblPinValue);
+		
+		btnIO = new JButton("I/O");
+		btnIO.setFont(new Font("Times New Roman", Font.PLAIN, 11));
+		btnIO.setBounds(174, 362, 61, 23);
+		frameArduino.getContentPane().add(btnIO);
+		
+		btnHighLow = new JButton("Hi/Lo");
+		btnHighLow.setFont(new Font("Times New Roman", Font.PLAIN, 11));
+		btnHighLow.setBounds(174, 387, 61, 23);
+		frameArduino.getContentPane().add(btnHighLow);
 	}
 }
