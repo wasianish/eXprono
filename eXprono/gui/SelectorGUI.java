@@ -50,7 +50,7 @@ public class SelectorGUI {
 	 */
 	private void initialize() {
 		selectorForm = new JFrame();
-		selectorForm.setTitle("eXprono");
+		selectorForm.setTitle(" eXprono ");
 		selectorForm.setBounds(100, 100, 248, 180);
 		selectorForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		selectorForm.getContentPane().setLayout(null);
