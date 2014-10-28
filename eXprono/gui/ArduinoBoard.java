@@ -69,7 +69,7 @@ public class ArduinoBoard {
 	}
 	
 	public int analogRead(int pin) {
-		return false;
+		return 0;
 	}
 	
 	
