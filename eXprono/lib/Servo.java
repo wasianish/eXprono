@@ -7,8 +7,8 @@ public class Servo {
 	private int pin = 0;
 	private int angle = 0;
 	private int pulse = 0;
-	private int minPulse = 34;
-	private int maxPulse = 150;
+	private int minPulse = 544;
+	private int maxPulse = 2400;
 	private ArduinoBoard board;
 	
 	public Servo(ArduinoBoard board) {
@@ -36,5 +36,6 @@ public class Servo {
 			angle = 180;
 		}
 		this.angle = angle;
+		pulse = (minPulse )
 	}
 }
