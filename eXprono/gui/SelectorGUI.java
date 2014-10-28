@@ -1,47 +1,23 @@
 package eXprono.gui;
 
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-
-import java.awt.Window.Type;
-
-import javax.swing.ComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JRadioButton;
-import javax.swing.JPasswordField;
-
 import java.awt.Font;
+import java.awt.Toolkit;
 
-import jssc.SerialPortList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import java.awt.Toolkit;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import jssc.SerialPortList;
 
 public class SelectorGUI {
 
 	private JFrame frameSelector;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SelectorGUI window = new SelectorGUI();
-					window.frameSelector.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	private JComboBox comboPort;
+	
+	
 	/**
 	 * Create the application.
 	 */
@@ -58,16 +34,15 @@ public class SelectorGUI {
 		frameSelector = new JFrame();
 		frameSelector.setIconImage(Toolkit.getDefaultToolkit().getImage(SelectorGUI.class.getResource("/javax/swing/plaf/metal/icons/Error.gif")));
 		frameSelector.setResizable(false);
-		frameSelector.setTitle(" eXprono ");
+		frameSelector.setTitle("eXprono");
 		frameSelector.setBounds(100, 100, 248, 306);
 		frameSelector.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameSelector.getContentPane().setLayout(null);
 		
 		String[] portStrings = SerialPortList.getPortNames();
-		JComboBox comboPort = new JComboBox(portStrings);
+		comboPort = new JComboBox(portStrings);
 		comboPort.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		comboPort.setBounds(36, 121, 155, 20);
-		comboPort.addActionListener(listener);
 		frameSelector.getContentPane().add(comboPort);
 		
 		JLabel textPort = new JLabel("Select a COM Port");
@@ -86,7 +61,6 @@ public class SelectorGUI {
 		JComboBox comboBoard = new JComboBox(boardStrings);
 		comboBoard.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		comboBoard.setBounds(36, 177, 155, 20);
-		comboBoard.addActionListener(listener);
 		frameSelector.getContentPane().add(comboBoard);
 		
 		JLabel iconLabel = new JLabel("");
@@ -96,7 +70,7 @@ public class SelectorGUI {
 		
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.setBounds(36, 226, 155, 30);
-		btnSubmit.addAncestorListener(listener);
+		btnSubmit.addActionListener(listener);
 		frameSelector.getContentPane().add(btnSubmit);
 	}
 }
