@@ -1,6 +1,5 @@
 package eXprono.gui;
 
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 
@@ -19,12 +18,14 @@ public class SelectorGUI {
 	 * the components
 	 */
 	private JFrame frameSelector;
-	private JComboBox comboPort;
+	private JComboBox<String> comboPort;
 	private String[] portStrings;
 	private JLabel textPort;
 	private JLabel textBoard;
-	private String[] boardStrings;
-	private JComboBox comboBoard;
+	private String[] boardStrings = {"Uno", "Leonardo", "Due", "Yun", "Tre", 
+		"Zero","Micro","Esplora", "Mega ADK","Ethernet","Mega2560", 
+		"Robot", "Nano", "Fio"};
+	private JComboBox<String> comboBoard;
 	private JLabel iconLabel;
 	private JButton btnSubmit;
 	
@@ -50,7 +51,7 @@ public class SelectorGUI {
 		frameSelector.getContentPane().setLayout(null);
 		
 		portStrings = SerialPortList.getPortNames();
-		comboPort = new JComboBox(portStrings);
+		comboPort = new JComboBox<String>(portStrings);
 		comboPort.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		comboPort.setBounds(36, 121, 155, 20);
 		frameSelector.getContentPane().add(comboPort);
@@ -65,10 +66,7 @@ public class SelectorGUI {
 		textBoard.setBounds(36, 152, 155, 14);
 		frameSelector.getContentPane().add(textBoard);
 		
-		boardStrings = {"Uno", "Leonardo", "Due", "Yun", "Tre", 
-				"Zero","Micro","Esplora", "Mega ADK","Ethernet","Mega2560", 
-				"Robot", "Nano", "Fio"};
-		comboBoard = new JComboBox(boardStrings);
+		comboBoard = new JComboBox<String>(boardStrings);
 		comboBoard.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		comboBoard.setBounds(36, 177, 155, 20);
 		frameSelector.getContentPane().add(comboBoard);

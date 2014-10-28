@@ -1,16 +1,14 @@
 package eXprono.gui;
 
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Toolkit;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.ImageIcon;
 import javax.swing.JSlider;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import java.awt.Toolkit;
 
 public class ArduinoGUI {
 
@@ -21,7 +19,7 @@ public class ArduinoGUI {
 	private JFrame frameArduino;
 	private JLabel boardDisplay;
 	private JLabel lblPinDetails;
-	private JLabel lblPinNumber;
+	private JLabel lblNumber;
 	private JLabel lblMode;
 	private JLabel lblValue;
 	private JLabel lblType;
@@ -72,10 +70,10 @@ public class ArduinoGUI {
 		lblPinDetails.setBounds(20, 290, 177, 14);
 		frameArduino.getContentPane().add(lblPinDetails);
 		
-		lblPinNumber = new JLabel("Number");
-		lblPinNumber.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblPinNumber.setBounds(20, 315, 59, 14);
-		frameArduino.getContentPane().add(lblPinNumber);
+		lblNumber = new JLabel("Number");
+		lblNumber.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblNumber.setBounds(20, 315, 59, 14);
+		frameArduino.getContentPane().add(lblNumber);
 		
 		lblMode = new JLabel("Mode");
 		lblMode.setFont(new Font("Times New Roman", Font.PLAIN, 14));
@@ -101,5 +99,25 @@ public class ArduinoGUI {
 		sliderPWM.setMajorTickSpacing(255);
 		sliderPWM.setBounds(20, 415, 200, 50);
 		frameArduino.getContentPane().add(sliderPWM);
+		
+		JLabel lblPinNumber = new JLabel("N/A");
+		lblPinNumber.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblPinNumber.setBounds(117, 315, 80, 14);
+		frameArduino.getContentPane().add(lblPinNumber);
+		
+		JLabel lblPinType = new JLabel("N/A");
+		lblPinType.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblPinType.setBounds(117, 341, 80, 14);
+		frameArduino.getContentPane().add(lblPinType);
+		
+		JLabel lblPinMode = new JLabel("N/A");
+		lblPinMode.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblPinMode.setBounds(117, 366, 80, 14);
+		frameArduino.getContentPane().add(lblPinMode);
+		
+		JLabel lblPinValue = new JLabel("N/A");
+		lblPinValue.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblPinValue.setBounds(117, 391, 80, 14);
+		frameArduino.getContentPane().add(lblPinValue);
 	}
 }

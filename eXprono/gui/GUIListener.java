@@ -1,7 +1,7 @@
 package eXprono.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GUIListener implements ActionListener {
 
