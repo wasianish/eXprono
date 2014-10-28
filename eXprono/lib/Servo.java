@@ -21,7 +21,7 @@ public class Servo {
 	}
 	
 	public void attach(int pin) {
-		
+		this.pin = pin;
 	}
 	
 	public void write(int angle) {
