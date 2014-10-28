@@ -14,8 +14,19 @@ import java.awt.Toolkit;
 
 public class ArduinoGUI {
 
+	/*
+	 * Adding in private fields of 
+	 * the components
+	 */
 	private JFrame frameArduino;
-
+	private JLabel boardDisplay;
+	private JLabel lblPinDetails;
+	private JLabel lblPinNumber;
+	private JLabel lblMode;
+	private JLabel lblValue;
+	private JLabel lblType;
+	private JSlider sliderPWM;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -51,37 +62,37 @@ public class ArduinoGUI {
 		frameArduino.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameArduino.getContentPane().setLayout(null);
 		
-		JLabel boardDisplay = new JLabel("");
+		boardDisplay = new JLabel("");
 		boardDisplay.setIcon(new ImageIcon(ArduinoGUI.class.getResource("/com/sun/javafx/scene/control/skin/modena/HTMLEditor-Cut.png")));
 		boardDisplay.setBounds(10, 11, 508, 268);
 		frameArduino.getContentPane().add(boardDisplay);
 		
-		JLabel lblPinDetails = new JLabel("Pin Details");
+	 	lblPinDetails = new JLabel("Pin Details");
 		lblPinDetails.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		lblPinDetails.setBounds(20, 290, 177, 14);
 		frameArduino.getContentPane().add(lblPinDetails);
 		
-		JLabel lblPinNumber = new JLabel("Number");
+		lblPinNumber = new JLabel("Number");
 		lblPinNumber.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		lblPinNumber.setBounds(20, 315, 59, 14);
 		frameArduino.getContentPane().add(lblPinNumber);
 		
-		JLabel lblMode = new JLabel("Mode");
+		lblMode = new JLabel("Mode");
 		lblMode.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		lblMode.setBounds(20, 365, 59, 14);
 		frameArduino.getContentPane().add(lblMode);
 		
-		JLabel lblValue = new JLabel("Value");
+		lblValue = new JLabel("Value");
 		lblValue.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		lblValue.setBounds(20, 390, 59, 14);
 		frameArduino.getContentPane().add(lblValue);
 		
-		JLabel lblType = new JLabel("Type");
+		lblType = new JLabel("Type");
 		lblType.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		lblType.setBounds(20, 340, 59, 14);
 		frameArduino.getContentPane().add(lblType);
 		
-		JSlider sliderPWM = new JSlider();
+		sliderPWM = new JSlider();
 		sliderPWM.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		sliderPWM.setToolTipText("changes the PWM frequency");
 		sliderPWM.setValue(0);
