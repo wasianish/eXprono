@@ -17,7 +17,7 @@ public class SelectorGUI {
 	 * Adding in private fields of 
 	 * the components
 	 */
-	private JFrame frameSelector;
+	public JFrame frameSelector;
 	private JComboBox<String> comboPort;
 	private String[] portStrings;
 	private JLabel textPort;

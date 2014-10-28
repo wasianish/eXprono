@@ -37,6 +37,8 @@ public class ArduinoGUI {
 				try {
 					ArduinoGUI window = new ArduinoGUI();
 					window.frameArduino.setVisible(true);
+					SelectorGUI selector = new SelectorGUI();
+					selector.frameSelector.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -57,14 +59,14 @@ public class ArduinoGUI {
 	private void initialize() {
 		frameArduino = new JFrame();
 		frameArduino.setResizable(false);
-		frameArduino.setIconImage(Toolkit.getDefaultToolkit().getImage(ArduinoGUI.class.getResource("/javax/swing/plaf/metal/icons/Error.gif")));
+		//frameArduino.setIconImage(Toolkit.getDefaultToolkit().getImage(ArduinoGUI.class.getResource("/javax/swing/plaf/metal/icons/Error.gif")));
 		frameArduino.setTitle("eXprono");
 		frameArduino.setBounds(100, 100, 544, 510);
 		frameArduino.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameArduino.getContentPane().setLayout(null);
 		
 		boardDisplay = new JLabel("");
-		boardDisplay.setIcon(new ImageIcon(ArduinoGUI.class.getResource("/com/sun/javafx/scene/control/skin/modena/HTMLEditor-Cut.png")));
+		//boardDisplay.setIcon(new ImageIcon(ArduinoGUI.class.getResource("/com/sun/javafx/scene/control/skin/modena/HTMLEditor-Cut.png")));
 		boardDisplay.setBounds(10, 11, 508, 268);
 		frameArduino.getContentPane().add(boardDisplay);
 		
