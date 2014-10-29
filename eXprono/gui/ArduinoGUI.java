@@ -16,9 +16,6 @@ import javax.swing.border.TitledBorder;
 
 public class ArduinoGUI extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	/*
 	 * Adding in private fields of 
@@ -39,18 +36,13 @@ public class ArduinoGUI extends JFrame {
 	private JLabel lblPinValue;
 	private JCheckBox chkGraph;
 	
-	private long lastRescale;
 	
 	private BufferedImage scaledImage;
-	
+	public Pin currentPin;
 	public ArduinoBoard board;
 	
 	private int pastX;
 	private int pastY;
-	
-	public Pin currentPin;
-	
-	public JButton btnNewInstance;
 	
 	private double scaleFactor;
 	private boolean scaledToHeight = false;
@@ -170,7 +162,7 @@ public class ArduinoGUI extends JFrame {
 		
 		chkGraph = new JCheckBox("Graph");
 		chkGraph.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-		chkGraph.setBounds(224, 330, 100, 23);
+		chkGraph.setBounds(224, 337, 100, 23);
 		chkGraph.addActionListener(Main.listener);
 		this.getContentPane().add(chkGraph);
 		
@@ -180,11 +172,24 @@ public class ArduinoGUI extends JFrame {
 		updateThread.start();
 	}
 	
+	/*
+	 * Scale Arduino Image
+	 * @params Buffered image of Arduino
+	 * @run changes the Buffered Image to fit new scaling of the window
+	 */
 	private void scaleArduinoImage(BufferedImage input) {
+		
+		/*
+		 * setting adjustment variables
+		 */
 		double heightRatio = (double)input.getHeight()/boardDisplay.getHeight();
 		double widthRatio = (double)input.getWidth()/boardDisplay.getWidth();
 		int newWidth = boardDisplay.getWidth();
 		int newHeight = boardDisplay.getHeight();
+		
+		/*
+		 * applying adjustment variables
+		 */
 		if(heightRatio > widthRatio) {
 			newWidth = (int)(input.getWidth()/heightRatio);
 			scaleFactor = heightRatio;
@@ -194,6 +199,10 @@ public class ArduinoGUI extends JFrame {
 			scaleFactor = widthRatio;
 			scaledToHeight = false;
 		}
+		
+		/*
+		 * applying image to GUI
+		 */
 		scaledImage = new BufferedImage(newWidth, newHeight, BufferedImage.TRANSLUCENT);
 		Graphics2D g = scaledImage.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -201,7 +210,16 @@ public class ArduinoGUI extends JFrame {
 	    g.dispose();
 	}
 	
+	/*
+	 * Resized
+	 * @params nothing called based on Component Listener
+	 * @run adjusts components and image for new window size
+	 */
 	public void resized() {
+		
+		/*
+		 * setting adjustment variables
+		 */
 		int changeX = this.getWidth() - pastX;
 		int changeY = this.getHeight() - pastY;
 		if(changeX == 0 && changeY == 0) {
@@ -209,6 +227,10 @@ public class ArduinoGUI extends JFrame {
 		}
 		pastX = this.getWidth();
 		pastY = this.getHeight();
+		
+		/*
+		 * adjusts all of the GUI components with changeY int
+		 */
 		lblMode.setLocation(lblMode.getX(), lblMode.getY() + changeY);
 		lblNumber.setLocation(lblNumber.getX(), lblNumber.getY() + changeY);
 		lblPinDetails.setLocation(lblPinDetails.getX(), lblPinDetails.getY() + changeY);
@@ -224,11 +246,20 @@ public class ArduinoGUI extends JFrame {
 		btnNewInstance.setLocation(btnNewInstance.getX(), btnNewInstance.getY() + changeY);
 		chkGraph.setLocation(chkGraph.getX(), chkGraph.getY() + changeY);
 		boardDisplay.setSize(boardDisplay.getWidth() + changeX, boardDisplay.getHeight() + changeY);
+		
+		/*
+		 * adjusts image based on scaledImage from scaleArduinoImage()
+		 */
 		scaleArduinoImage(board.image);
 		boardDisplay.setIcon(new ImageIcon(this.scaledImage));
-		lastRescale = System.currentTimeMillis();
+		System.currentTimeMillis();
 	}
 	
+	/*
+	 * Clicked
+	 * @params takes in int x and int y of the selected location from MouseListener
+	 * @run compares location with adjusted location and updates pin when possible
+	 */
 	public void clicked(int x, int y) {
 		Dimension d = getNormalizedScaledPoint(x, y);
 		Pin pin = board.getPinAtCoords(d.width, d.height);
@@ -240,14 +271,28 @@ public class ArduinoGUI extends JFrame {
 		}
 	}
 	
+	/*
+	 * get Normalized Scaled Point
+	 * @params int y and int x of where was clicked
+	 * @run adjusts window dimensions to match reference images for location identification
+	 * @output point based on refernece image
+	 */
 	public Dimension getNormalizedScaledPoint(int x, int y) {
 		Dimension out = new Dimension();
+		
+		/*
+		 * Normalizes dimensions of Window
+		 */
 		int frameX = x - 8;
 		int frameY = y - 30;
 		int imageX = frameX - boardDisplay.getLocation().x;
 		int imageY = frameY - boardDisplay.getLocation().y;
 		int normalX = 0;
 		int normalY = 0;
+		
+		/*
+		 * scales X and Y with scale factor
+		 */
 		if(scaledToHeight) {
 			normalX = (int)(imageX * scaleFactor);
 			normalY = (int)(imageY * scaleFactor);
@@ -256,11 +301,20 @@ public class ArduinoGUI extends JFrame {
 			normalY = (int)((imageY - ((double)boardDisplay.getSize().height - (double)scaledImage.getHeight())/2) * scaleFactor);
 		}
 		System.out.println(normalX + ":" + normalY);
+		
+		/*
+		 * returns adjusted dimension for point
+		 */
 		out.height = normalY;
 		out.width = normalX;
 		return out;
 	}
 	
+	/*
+	 * Update Current Pin
+	 * @params used to change PinType with ActionListener
+	 * @run sets lblPinType text to the correct type based on selected pin
+	 */
 	public void updateCurrentPin() {
 		lblPinNumber.setText(Integer.toString(currentPin.number));
 		if(currentPin.digital) {
@@ -272,11 +326,21 @@ public class ArduinoGUI extends JFrame {
 		lblPinValue.setText(Double.toString(currentPin.getNormalizedValue()));
 	}
 	
+	/*
+	 * Toggle Current Pin Mode
+	 * @params called for changing pin mode from ActionListener
+	 * @run sets Pin Mode text to selected pin mode
+	 */
 	public void toggleCurrentPinMode() {
 		currentPin.togglePinMode();
 		lblPinMode.setText(currentPin.getMode().toString());
 	}
 	
+	/*
+	 * Toggle Current Pin Value
+	 * @params called for changing pin value from ActionListener
+	 * @run sets Pin Mode text to selected pin value
+	 */
 	public void toggleCurrentPinValue() {
 		currentPin.togglePinValue();
 		lblPinValue.setText(Double.toString(currentPin.getNormalizedValue()));
