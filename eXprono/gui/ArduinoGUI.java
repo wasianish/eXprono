@@ -63,7 +63,7 @@ public class ArduinoGUI extends JFrame{
 		this.setBounds(100, 100, 544, 510);
 		pastX = this.getWidth();
 		pastY = this.getHeight();
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.getContentPane().setLayout(null);
 		
 		boardDisplay = new JLabel("");
@@ -139,7 +139,7 @@ public class ArduinoGUI extends JFrame{
 		btnHighLow.addActionListener(Main.listener);
 		this.getContentPane().add(btnHighLow);
 		
-		JButton btnNewInstance = new JButton("Open Another Arduino");
+		btnNewInstance = new JButton("Open Another Arduino");
 		btnNewInstance.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		btnNewInstance.setBounds(371, 439, 147, 23);
 		btnNewInstance.addActionListener(Main.listener);
@@ -181,6 +181,7 @@ public class ArduinoGUI extends JFrame{
 		lblPinValue.setLocation(lblPinValue.getX(), lblPinValue.getY() + changeY);
 		btnIO.setLocation(btnIO.getX(), btnIO.getY() + changeY);
 		btnHighLow.setLocation(btnHighLow.getX(), btnHighLow.getY() + changeY);
+		btnNewInstance.setLocation(btnNewInstance.getX(), btnNewInstance.getY() + changeY);
 		boardDisplay.setSize(boardDisplay.getWidth() + changeX, boardDisplay.getHeight() + changeY);
 		pastX = this.getWidth();
 		pastY = this.getHeight();

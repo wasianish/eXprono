@@ -22,7 +22,7 @@ public class Main {
 	 */
 	
 	public static void selected() {
-		selectGUI.setVisible(false);
+		selectGUI.dispose();
 		
 		arduinoGUI.add(new ArduinoGUI(new ArduinoBoard((String)selectGUI.comboPort.getSelectedItem(),
 				ArduinoBoard.Boards.getBoardFromName((String)selectGUI.comboBoard.getSelectedItem()))));
