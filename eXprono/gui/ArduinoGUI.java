@@ -46,7 +46,7 @@ public class ArduinoGUI extends JFrame{
 	private int pastY;
 	
 	public boolean doneResizing = true;
-	public static JButton btnNewInstance;
+	public JButton btnNewInstance;
 	
 	/**
 	 * Create the application.

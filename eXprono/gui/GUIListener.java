@@ -14,9 +14,8 @@ public class GUIListener implements ActionListener, ComponentListener {
 	public void actionPerformed(ActionEvent event) {
 		if((JButton)event.getSource() == Main.selectGUI.btnSubmit) {
 			Main.selected();
-		}
-		if((JButton)event.getSource() == Main.arduinoGUI.btnNewInstance) {
-			SelectorGUI selectGUI = new SelectorGUI();
+		} else {
+			Main.selectGUI.setVisible(true);
 		}
 	}
 
@@ -34,8 +33,10 @@ public class GUIListener implements ActionListener, ComponentListener {
 
 	@Override
 	public void componentResized(ComponentEvent e) {
-		if(((JFrame)e.getSource()) == Main.arduinoGUI && Main.arduinoGUI.doneResizing) {
-			Main.arduinoGUI.resized();
+		for(ArduinoGUI a:Main.arduinoGUI) {
+			if(((JFrame)e.getSource()) == a && a.doneResizing) {
+				a.resized();
+			}
 		}
 	}
 

@@ -1,14 +1,18 @@
 package eXprono.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Main {
 	
 	public static SelectorGUI selectGUI;
-	public static ArduinoGUI arduinoGUI;
+	public static List<ArduinoGUI> arduinoGUI;
 	
 	public static GUIListener listener;
 	
 	public static void main(String[] args) {
+		arduinoGUI = new ArrayList<ArduinoGUI>();
 		listener = new GUIListener();
 		selectGUI = new SelectorGUI();
 	}
@@ -20,8 +24,8 @@ public class Main {
 	public static void selected() {
 		selectGUI.setVisible(false);
 		
-		arduinoGUI = new ArduinoGUI(new ArduinoBoard((String)selectGUI.comboPort.getSelectedItem(),
-				ArduinoBoard.Boards.getBoardFromName((String)selectGUI.comboBoard.getSelectedItem())));
+		arduinoGUI.add(new ArduinoGUI(new ArduinoBoard((String)selectGUI.comboPort.getSelectedItem(),
+				ArduinoBoard.Boards.getBoardFromName((String)selectGUI.comboBoard.getSelectedItem()))));
 	}
 
 }
