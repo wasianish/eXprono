@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.border.TitledBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ArduinoGUI extends JFrame{
 
@@ -44,6 +46,7 @@ public class ArduinoGUI extends JFrame{
 	private int pastY;
 	
 	public boolean doneResizing = true;
+	public static JButton btnNewInstance;
 	
 	/**
 	 * Create the application.
@@ -127,12 +130,20 @@ public class ArduinoGUI extends JFrame{
 		btnIO = new JButton("I/O");
 		btnIO.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		btnIO.setBounds(174, 362, 61, 23);
+		btnIO.addActionListener(Main.listener);
 		this.getContentPane().add(btnIO);
 		
 		btnHighLow = new JButton("Hi/Lo");
 		btnHighLow.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		btnHighLow.setBounds(174, 387, 61, 23);
+		btnHighLow.addActionListener(Main.listener);
 		this.getContentPane().add(btnHighLow);
+		
+		JButton btnNewInstance = new JButton("Open Another Arduino");
+		btnNewInstance.setFont(new Font("Times New Roman", Font.PLAIN, 11));
+		btnNewInstance.setBounds(371, 439, 147, 23);
+		btnNewInstance.addActionListener(Main.listener);
+		getContentPane().add(btnNewInstance);
 		
 		this.setVisible(true);
 	}

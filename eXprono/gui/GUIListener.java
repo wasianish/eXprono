@@ -15,6 +15,9 @@ public class GUIListener implements ActionListener, ComponentListener {
 		if((JButton)event.getSource() == Main.selectGUI.btnSubmit) {
 			Main.selected();
 		}
+		if((JButton)event.getSource() == Main.arduinoGUI.btnNewInstance) {
+			SelectorGUI selectGUI = new SelectorGUI();
+		}
 	}
 
 	@Override
