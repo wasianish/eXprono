@@ -36,6 +36,7 @@ public class ArduinoGUI extends JFrame {
 	private JLabel lblPinValue;
 	private JCheckBox chkGraph;
 	
+	public JButton btnNewInstance;
 	
 	private BufferedImage scaledImage;
 	public Pin currentPin;
