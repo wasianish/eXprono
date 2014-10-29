@@ -14,7 +14,7 @@ public class GUIListener implements ActionListener, ComponentListener {
 	public void actionPerformed(ActionEvent event) {
 		if((JButton)event.getSource() == Main.selectGUI.btnSubmit) {
 			Main.selected();
-		} else {
+		} else if(((JButton)(event.getSource())).getText().equals("Open Another Arduino")){
 			Main.selectGUI.setVisible(true);
 		}
 	}
