@@ -2,7 +2,7 @@ eXprono
 
 The Basics
 =======
-eXprono is an interface between compuer and Arduino.
+eXprono is an interface between computer and Arduino.
 
 The jSSC library is included for ease of use.  We do not own the code in jSSC.
 

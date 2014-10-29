@@ -59,7 +59,9 @@ public class ArduinoBoard {
 	private static final int arduinoStartByte = 64;
 	
 	public final File imageFile;
+	public final File pinFile;
 	public BufferedImage image;
+	public BufferedImage pinImage;
 	public final String dataFile;
 	
 	private Pin[] digitalPins;
@@ -102,9 +104,11 @@ public class ArduinoBoard {
 			analogPins[i] = new Pin(false, i, false);
 		}
 		
+		pinFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + "_pins.png");
 		imageFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + ".png"); // Also get the folder
 		try {
 			image = ImageIO.read(imageFile);
+			pinImage = ImageIO.read(pinFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -195,7 +199,6 @@ public class ArduinoBoard {
 		}
 		return out;
 	}
-	
 	
 	
 }
