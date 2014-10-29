@@ -21,7 +21,11 @@ public class Main {
 	 * Called when the start button is clicked in the Selector GUI
 	 */
 	
-	public static void selected() {
+	public static void selected() {	
+		if(((String)(selectGUI.comboPort.getSelectedItem())).equals("---")) {
+			return;
+		}
+		
 		selectGUI.dispose();
 		
 		arduinoGUI.add(new ArduinoGUI(new ArduinoBoard((String)selectGUI.comboPort.getSelectedItem(),

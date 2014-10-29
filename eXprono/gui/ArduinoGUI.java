@@ -1,5 +1,6 @@
 package eXprono.gui;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -7,14 +8,13 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.border.TitledBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
-public class ArduinoGUI extends JFrame{
+public class ArduinoGUI extends JFrame {
 
 	/**
 	 * 
@@ -37,16 +37,37 @@ public class ArduinoGUI extends JFrame{
 	private JLabel lblPinType;
 	private JLabel lblPinMode;
 	private JLabel lblPinValue;
+	private JCheckBox chkGraph;
+	
+	private long lastRescale;
 	
 	private BufferedImage scaledImage;
 	
-	private ArduinoBoard board;
+	public ArduinoBoard board;
 	
 	private int pastX;
 	private int pastY;
 	
-	public boolean doneResizing = true;
+	public Pin currentPin;
+	
 	public JButton btnNewInstance;
+	
+	private double scaleFactor;
+	private boolean scaledToHeight = false;
+	
+	private Runnable update = new Runnable() {
+
+		@Override
+		public void run() {
+			while(true) {
+				resized();
+			}
+		}
+		
+	};
+	
+	public GraphGUI graphGui;
+	
 	
 	/**
 	 * Create the application.
@@ -54,6 +75,8 @@ public class ArduinoGUI extends JFrame{
 	public ArduinoGUI(ArduinoBoard board) {
 		
 		this.board = board;
+		
+		this.addMouseListener(Main.listener);
 		
 		this.addComponentListener(Main.listener);
 		
@@ -114,12 +137,12 @@ public class ArduinoGUI extends JFrame{
 		
 		lblPinType = new JLabel("N/A");
 		lblPinType.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblPinType.setBounds(117, 341, 80, 14);
+		lblPinType.setBounds(117, 341, 120, 14);
 		this.getContentPane().add(lblPinType);
 		
 		lblPinMode = new JLabel("N/A");
 		lblPinMode.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblPinMode.setBounds(117, 366, 80, 14);
+		lblPinMode.setBounds(117, 366, 120, 14);
 		this.getContentPane().add(lblPinMode);
 		
 		lblPinValue = new JLabel("N/A");
@@ -129,23 +152,32 @@ public class ArduinoGUI extends JFrame{
 		
 		btnIO = new JButton("I/O");
 		btnIO.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-		btnIO.setBounds(174, 362, 61, 23);
+		btnIO.setBounds(224, 362, 61, 23);
 		btnIO.addActionListener(Main.listener);
 		this.getContentPane().add(btnIO);
 		
 		btnHighLow = new JButton("Hi/Lo");
 		btnHighLow.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-		btnHighLow.setBounds(174, 387, 61, 23);
+		btnHighLow.setBounds(224, 387, 61, 23);
 		btnHighLow.addActionListener(Main.listener);
 		this.getContentPane().add(btnHighLow);
 		
 		btnNewInstance = new JButton("Open Another Arduino");
 		btnNewInstance.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-		btnNewInstance.setBounds(371, 439, 147, 23);
+		btnNewInstance.setBounds(250, 439, 147, 23);
 		btnNewInstance.addActionListener(Main.listener);
-		getContentPane().add(btnNewInstance);
+		this.getContentPane().add(btnNewInstance);
+		
+		chkGraph = new JCheckBox("Graph");
+		chkGraph.setFont(new Font("Times New Roman", Font.PLAIN, 11));
+		chkGraph.setBounds(224, 330, 100, 23);
+		chkGraph.addActionListener(Main.listener);
+		this.getContentPane().add(chkGraph);
 		
 		this.setVisible(true);
+		
+		Thread updateThread = new Thread(update);
+		updateThread.start();
 	}
 	
 	private void scaleArduinoImage(BufferedImage input) {
@@ -155,8 +187,12 @@ public class ArduinoGUI extends JFrame{
 		int newHeight = boardDisplay.getHeight();
 		if(heightRatio > widthRatio) {
 			newWidth = (int)(input.getWidth()/heightRatio);
+			scaleFactor = heightRatio;
+			scaledToHeight = true;
 		} else {
 			newHeight = (int)(input.getHeight()/widthRatio);
+			scaleFactor = widthRatio;
+			scaledToHeight = false;
 		}
 		scaledImage = new BufferedImage(newWidth, newHeight, BufferedImage.TRANSLUCENT);
 		Graphics2D g = scaledImage.createGraphics();
@@ -166,9 +202,13 @@ public class ArduinoGUI extends JFrame{
 	}
 	
 	public void resized() {
-		doneResizing = false;
 		int changeX = this.getWidth() - pastX;
 		int changeY = this.getHeight() - pastY;
+		if(changeX == 0 && changeY == 0) {
+			return;
+		}
+		pastX = this.getWidth();
+		pastY = this.getHeight();
 		lblMode.setLocation(lblMode.getX(), lblMode.getY() + changeY);
 		lblNumber.setLocation(lblNumber.getX(), lblNumber.getY() + changeY);
 		lblPinDetails.setLocation(lblPinDetails.getX(), lblPinDetails.getY() + changeY);
@@ -182,11 +222,63 @@ public class ArduinoGUI extends JFrame{
 		btnIO.setLocation(btnIO.getX(), btnIO.getY() + changeY);
 		btnHighLow.setLocation(btnHighLow.getX(), btnHighLow.getY() + changeY);
 		btnNewInstance.setLocation(btnNewInstance.getX(), btnNewInstance.getY() + changeY);
+		chkGraph.setLocation(chkGraph.getX(), chkGraph.getY() + changeY);
 		boardDisplay.setSize(boardDisplay.getWidth() + changeX, boardDisplay.getHeight() + changeY);
-		pastX = this.getWidth();
-		pastY = this.getHeight();
 		scaleArduinoImage(board.image);
 		boardDisplay.setIcon(new ImageIcon(this.scaledImage));
-		doneResizing = true;
+		lastRescale = System.currentTimeMillis();
+	}
+	
+	public void clicked(int x, int y) {
+		Dimension d = getNormalizedScaledPoint(x, y);
+		Pin pin = board.getPinAtCoords(d.width, d.height);
+		//System.out.println(x + " " + y);
+		if(pin != null) {
+			pin.update();
+			currentPin = pin;
+			updateCurrentPin();
+		}
+	}
+	
+	public Dimension getNormalizedScaledPoint(int x, int y) {
+		Dimension out = new Dimension();
+		int frameX = x - 8;
+		int frameY = y - 30;
+		int imageX = frameX - boardDisplay.getLocation().x;
+		int imageY = frameY - boardDisplay.getLocation().y;
+		int normalX = 0;
+		int normalY = 0;
+		if(scaledToHeight) {
+			normalX = (int)(imageX * scaleFactor);
+			normalY = (int)(imageY * scaleFactor);
+		} else {
+			normalX = (int)(imageX * scaleFactor);
+			normalY = (int)((imageY - ((double)boardDisplay.getSize().height - (double)scaledImage.getHeight())/2) * scaleFactor);
+		}
+		System.out.println(normalX + ":" + normalY);
+		out.height = normalY;
+		out.width = normalX;
+		return out;
+	}
+	
+	public void updateCurrentPin() {
+		lblPinNumber.setText(Integer.toString(currentPin.number));
+		if(currentPin.digital) {
+			lblPinType.setText("Digital");
+		} else {
+			lblPinType.setText("Analog");
+		}
+		lblPinMode.setText(currentPin.getMode().toString());
+		lblPinValue.setText(Double.toString(currentPin.getNormalizedValue()));
+	}
+	
+	public void toggleCurrentPinMode() {
+		currentPin.togglePinMode();
+		lblPinMode.setText(currentPin.getMode().toString());
+	}
+	
+	public void toggleCurrentPinValue() {
+		currentPin.togglePinValue();
+		lblPinValue.setText(Double.toString(currentPin.getNormalizedValue()));
 	}
 }

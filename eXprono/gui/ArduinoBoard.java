@@ -1,7 +1,10 @@
 package eXprono.gui;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -53,13 +56,12 @@ public class ArduinoBoard {
 		}
 	}
 	
-	private SerialPort serial;
+	public SerialPort serial;
 	
 	private static final int compStartByte = 36;
 	private static final int arduinoStartByte = 64;
 	
 	public final File imageFile;
-	public final File pinFile;
 	public BufferedImage image;
 	public BufferedImage pinImage;
 	public final String dataFile;
@@ -90,29 +92,64 @@ public class ArduinoBoard {
 			boolean pwm = false;
 			for(int j = 0; j < board.pwmPins.length; j++) {
 				if(board.pwmPins[j] == i) {
-					digitalPins[i] = new Pin(true, i, true);
+					digitalPins[i] = new Pin(true, i, true, this);
 					pwm = true;
 					break;
 				}
 			}
 			if(!pwm) {
-				digitalPins[i] = new Pin(true, i, false);
+				digitalPins[i] = new Pin(true, i, false, this);
 			}
 		}
 		
 		for(int i = 0; i < board.analogPins; i++) {
-			analogPins[i] = new Pin(false, i, false);
+			analogPins[i] = new Pin(false, i, false, this);
 		}
 		
-		pinFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + "_pins.png");
 		imageFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + ".png"); // Also get the folder
 		try {
 			image = ImageIO.read(imageFile);
-			pinImage = ImageIO.read(pinFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		dataFile = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + ".txt"; // Also get the folder
+		
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(dataFile));
+			String temp = "";
+			int pinStyle = 0;
+			int dimension = 0;
+			while((temp = br.readLine()) != null) {
+				String[] stuff = temp.split("\t");
+				if(stuff[0].equals("PinStyle")) {
+					if(stuff[1].equals("Square")) {
+						pinStyle = 1;
+					} else {
+						pinStyle = 2;
+					}
+				} else if(stuff[0].equals("Dimension")) {
+					dimension = Integer.parseInt(stuff[1]);
+				} else {
+					int num = Integer.parseInt(stuff[0].substring(1));
+					if(stuff[0].charAt(0) == 'D') {
+						for(Pin pin: digitalPins) {
+							if(pin.number == num) {
+								pin.addBounds(pinStyle, dimension, Integer.parseInt(stuff[1]), Integer.parseInt(stuff[2]));
+							}
+						}
+					} else {
+						for(Pin pin: analogPins) {
+							if(pin.number == num) {
+								pin.addBounds(pinStyle, dimension, Integer.parseInt(stuff[1]), Integer.parseInt(stuff[2]));
+							}
+						}
+					}
+				}
+			}
+			br.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void digitalWrite(int pin, int value) {
@@ -165,8 +202,7 @@ public class ArduinoBoard {
 		if(received.length == 0) {
 			return -1;
 		}
-		analogPins[pin].updateValue(received[1] & 127 - received[1] & -128 + received[2] << 8);
-		return received[1] & 127 - received[1] & -128 + received[2] << 8;
+		return received[1] & 127 - (received[1] & -128) + (received[2] << 8);
 	}
 	
 	public void pinMode(int pin, boolean input) {
@@ -198,6 +234,20 @@ public class ArduinoBoard {
 			out = new byte[0];
 		}
 		return out;
+	}
+	
+	public Pin getPinAtCoords(int x, int y) {
+		for(int i = 0; i < digitalPins.length; i++) {
+			if(digitalPins[i].containsPixel(x, y)) {
+				return digitalPins[i];
+			}
+		}
+		for(int i = 0; i < analogPins.length; i++) {
+			if(analogPins[i].containsPixel(x, y)) {
+				return analogPins[i];
+			}
+		}
+		return null;
 	}
 	
 	

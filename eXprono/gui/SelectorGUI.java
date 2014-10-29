@@ -1,8 +1,16 @@
 package eXprono.gui;
 
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -45,11 +53,25 @@ public class SelectorGUI extends JFrame{
 		this.setResizable(false);
 		this.setTitle("eXprono");
 		this.setBounds(100, 100, 248, 306);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.getContentPane().setLayout(null);
 		
 		portStrings = SerialPortList.getPortNames();
-		comboPort = new JComboBox<String>(portStrings);
+		List<String> ports = new ArrayList<String>();
+		ports.add("---");
+		for(int i = 0; i < portStrings.length; i++) {
+			boolean found = false;
+			for(ArduinoGUI board: Main.arduinoGUI) {
+				if(board.board.serial.getPortName().equals(portStrings[i])) {
+					found = true;
+				}
+			}
+			if(!found) {
+				ports.add(portStrings[i]);
+			}
+		}
+		
+		comboPort = new JComboBox<String>(ports.toArray(new String[0]));
 		comboPort.setFont(new Font("Times New Roman", Font.PLAIN, 11));
 		comboPort.setBounds(36, 121, 155, 20);
 		this.getContentPane().add(comboPort);
@@ -70,7 +92,16 @@ public class SelectorGUI extends JFrame{
 		this.getContentPane().add(comboBoard);
 		
 		iconLabel = new JLabel("");
-		iconLabel.setIcon(new ImageIcon(SelectorGUI.class.getResource("/sun/print/resources/duplex.png")));
+		try {
+			BufferedImage bi = ImageIO.read(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/logo.png"));
+			BufferedImage newbr = new BufferedImage(161,74, BufferedImage.TRANSLUCENT);
+			Graphics2D g = newbr.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+			g.drawImage(bi, 0, 0, 161, 74, null);
+			iconLabel.setIcon(new ImageIcon(newbr));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		iconLabel.setBounds(36, 11, 161, 74);
 		this.getContentPane().add(iconLabel);
 		
