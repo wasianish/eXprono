@@ -1,6 +1,5 @@
 package eXprono.gui;
 
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -177,9 +176,5 @@ public class ArduinoGUI extends JFrame{
 		scaleArduinoImage(board.image);
 		boardDisplay.setIcon(new ImageIcon(this.scaledImage));
 		doneResizing = true;
-	}
-	
-	private void move(Component c, int y) {
-		c.setLocation(c.getX(), c.getY() + y);
 	}
 }

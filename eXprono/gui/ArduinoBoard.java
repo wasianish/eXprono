@@ -62,11 +62,8 @@ public class ArduinoBoard {
 	public BufferedImage image;
 	public final String dataFile;
 	
-	private boolean[] digitalStates;
-	private int[] pwmStates;
-	private int[] digitalModes;
-	private int[] analogStates;
-	private boolean[] toSerialForward;
+	private Pin[] digitalPins;
+	private Pin[] analogPins;
 	
 	public ArduinoBoard(String comPort, Boards board) {
 		try {
@@ -83,12 +80,28 @@ public class ArduinoBoard {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+		analogPins = new Pin[board.analogPins];
+		digitalPins = new Pin[board.digitalPins];
 				
-		digitalModes = new int[board.digitalPins];
-		digitalStates = new boolean[board.digitalPins];
-		pwmStates = new int[board.digitalPins];
-		analogStates = new int[board.analogPins];
-		toSerialForward = new boolean[board.serials];
+		for(int i = 0; i < board.digitalPins; i++) {
+			boolean pwm = false;
+			for(int j = 0; j < board.pwmPins.length; j++) {
+				if(board.pwmPins[j] == i) {
+					digitalPins[i] = new Pin(true, i, true);
+					pwm = true;
+					break;
+				}
+			}
+			if(!pwm) {
+				digitalPins[i] = new Pin(true, i, false);
+			}
+		}
+		
+		for(int i = 0; i < board.analogPins; i++) {
+			analogPins[i] = new Pin(false, i, false);
+		}
+		
 		imageFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + ".png"); // Also get the folder
 		try {
 			image = ImageIO.read(imageFile);
@@ -98,9 +111,9 @@ public class ArduinoBoard {
 		dataFile = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "boards/" + board.prefix + ".txt"; // Also get the folder
 	}
 	
-	public void digitalWrite(int pin, boolean value) {
+	public void digitalWrite(int pin, int value) {
 		byte[] toSend = {compStartByte, (byte)(128 + pin), 1, 0};
-		if(value) {
+		if(value == 1) {
 			toSend[3] = 1;
 		}
 		try {
@@ -108,10 +121,11 @@ public class ArduinoBoard {
 		} catch(SerialPortException e) {
 			e.printStackTrace();
 		}
-		digitalStates[pin] = value;
+		digitalPins[pin].updateValue(value);
+		
 	}
 	
-	public boolean digitalRead(int pin) {
+	public int digitalRead(int pin) {
 		byte[] toSend = {compStartByte, (byte)(128 + pin), 0, 0};
 		try {
 			serial.writeBytes(toSend);
@@ -120,14 +134,10 @@ public class ArduinoBoard {
 		}
 		byte[] received = nextByte();
 		if(received.length == 0) {
-			return false;
+			return -1;
 		}
-		if(received[1] == 1) {
-			digitalStates[pin] = true;
-			return true;
-		}
-		digitalStates[pin] = false;
-		return false;
+		digitalPins[pin].updateValue(received[1]);
+		return received[1];
 	}
 	
 	public void analogWrite(int pin, int value) {
@@ -137,7 +147,7 @@ public class ArduinoBoard {
 		} catch(SerialPortException e) {
 			e.printStackTrace();
 		}
-		pwmStates[pin] = value;
+		digitalPins[pin].updateValue(value);
 	}
 	
 	public int analogRead(int pin) {
@@ -151,15 +161,16 @@ public class ArduinoBoard {
 		if(received.length == 0) {
 			return -1;
 		}
+		analogPins[pin].updateValue(received[1] & 127 - received[1] & -128 + received[2] << 8);
 		return received[1] & 127 - received[1] & -128 + received[2] << 8;
 	}
 	
 	public void pinMode(int pin, boolean input) {
 		byte[] toSend = {compStartByte, (byte) (128 + pin), 4, 0};
-		digitalModes[pin] = 1;
+		digitalPins[pin].setMode(Pin.Modes.INPUT);
 		if(input) {
 			toSend[2] = 3;
-			digitalModes[pin] = 2;
+			digitalPins[pin].setMode(Pin.Modes.OUTPUT);;
 		}
 		try {
 			serial.writeBytes(toSend);
@@ -184,6 +195,7 @@ public class ArduinoBoard {
 		}
 		return out;
 	}
+	
 	
 	
 }

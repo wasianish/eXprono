@@ -25,7 +25,7 @@ public class Servo {
 	
 	public void attach(int pin) {
 		this.pin = pin;
-		board.digitalWrite(pin, false);
+		board.digitalWrite(pin, 0);
 		board.pinMode(pin, false);
 	}
 	
