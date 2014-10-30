@@ -41,10 +41,15 @@ public class GUIListener implements ActionListener, ComponentListener, MouseList
 			if(((JCheckBox)event.getSource()).getText().equals("Graph")) {
 				for(ArduinoGUI gui: Main.arduinoGUI) {
 					if(((JCheckBox)event.getSource()).getRootPane().equals(gui.getRootPane())) {
+						if(!((JCheckBox)event.getSource()).isSelected()) {
+							gui.currentPin.isGraphed = false;
+							return;
+						}
 						if(gui.graphGui == null) {
 							gui.graphGui = new GraphGUI();
 						}
 						gui.graphGui.addPin(gui.currentPin);
+						gui.currentPin.isGraphed = true;
 					}
 				}
 			}

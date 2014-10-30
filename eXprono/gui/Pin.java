@@ -1,5 +1,7 @@
 package eXprono.gui;
 
+import java.awt.Color;
+
 public class Pin {
 	
 	public static enum Modes {
@@ -12,11 +14,14 @@ public class Pin {
 	private int value;
 	private Modes mode = Modes.UNDECLARED;
 	private ArduinoBoard board;
+	public boolean isGraphed;
 	
 	private int pinImageType; // 1 is square else is circle
 	private int dimension;
 	private int x;
 	private int y;
+	
+	public final Color color;
 	
 	public Pin(boolean digital, int number, boolean pwm, ArduinoBoard board) {
 		this.digital = digital;
@@ -26,6 +31,7 @@ public class Pin {
 		if(!digital) {
 			mode = Modes.OUTPUT;
 		}
+		color = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
 	}
 	
 	public void updateValue(int val) {
@@ -43,7 +49,12 @@ public class Pin {
 		} else {
 			out = ((double)value) * 5 / 1023;
 		}
-		out = (double)((int)out * 1000)/1000;
+		out = (double)((int)(out * 1000))/1000;
+		if(out < 0) {
+			out = 0;
+		} else if(out > 5) {
+			out = 5.0;
+		}
 		return out;
 	}
 	
@@ -60,7 +71,6 @@ public class Pin {
 			value = board.digitalRead(number);
 		} else {
 			value = board.analogRead(number);
-			System.out.println(value);
 		}
 	}
 	

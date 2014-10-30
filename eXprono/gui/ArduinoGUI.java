@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -48,7 +50,7 @@ public class ArduinoGUI extends JFrame {
 	private double scaleFactor;
 	private boolean scaledToHeight = false;
 	
-	private Runnable update = new Runnable() {
+	private Runnable updateScale = new Runnable() {
 
 		@Override
 		public void run() {
@@ -58,6 +60,34 @@ public class ArduinoGUI extends JFrame {
 		}
 		
 	};
+	
+	private Runnable updatePins = new Runnable() {
+
+		@Override
+		public void run() {
+			while(true) {
+				long start = System.currentTimeMillis();
+				for(Pin pin: pinsToUpdate) {
+					pin.update();
+				}
+				if(currentPin != null) {
+					lblPinValue.setText(Double.toString(currentPin.getNormalizedValue()) + " V");
+					lblPinMode.setText(currentPin.getMode().toString());
+				}
+				if(graphGui != null && graphGui.active) {
+					graphGui.graph();
+				}
+				System.out.println(System.currentTimeMillis() - start);
+				try {
+					Thread.sleep(100);
+				} catch(Exception e) {
+				}
+			}
+		}
+		
+	};
+	
+	private List<Pin> pinsToUpdate = new ArrayList<Pin>();
 	
 	public GraphGUI graphGui;
 	
@@ -169,8 +199,15 @@ public class ArduinoGUI extends JFrame {
 		
 		this.setVisible(true);
 		
-		Thread updateThread = new Thread(update);
+		//currentPin = board.getFirstPin();
+		//updateCurrentPin();
+		
+		Thread updateThread = new Thread(updateScale);
+		Thread updatePinss = new Thread(updatePins);
+		//read updateCurrentPinThread = new Thread(updateCurrentPin);
 		updateThread.start();
+		updatePinss.start();
+		//updateCurrentPinThread.start();
 	}
 	
 	/*
@@ -262,13 +299,24 @@ public class ArduinoGUI extends JFrame {
 	 * @run compares location with adjusted location and updates pin when possible
 	 */
 	public void clicked(int x, int y) {
+		
+		if(currentPin != null && !currentPin.isGraphed) {
+			pinsToUpdate.remove(currentPin);
+		}
 		Dimension d = getNormalizedScaledPoint(x, y);
 		Pin pin = board.getPinAtCoords(d.width, d.height);
 		//System.out.println(x + " " + y);
 		if(pin != null) {
-			pin.update();
+			chkGraph.setSelected(pin.isGraphed);
+			pinsToUpdate.add(pin);
 			currentPin = pin;
-			updateCurrentPin();
+			lblPinNumber.setText(Integer.toString(currentPin.number));
+			if(currentPin.digital) {
+				lblPinType.setText("Digital");
+			} else {
+				lblPinType.setText("Analog");
+			}
+			lblPinMode.setText(currentPin.getMode().toString());
 		}
 	}
 	
@@ -301,7 +349,6 @@ public class ArduinoGUI extends JFrame {
 			normalX = (int)(imageX * scaleFactor);
 			normalY = (int)((imageY - ((double)boardDisplay.getSize().height - (double)scaledImage.getHeight())/2) * scaleFactor);
 		}
-		System.out.println(normalX + ":" + normalY);
 		
 		/*
 		 * returns adjusted dimension for point
@@ -312,29 +359,12 @@ public class ArduinoGUI extends JFrame {
 	}
 	
 	/*
-	 * Update Current Pin
-	 * @params used to change PinType with ActionListener
-	 * @run sets lblPinType text to the correct type based on selected pin
-	 */
-	public void updateCurrentPin() {
-		lblPinNumber.setText(Integer.toString(currentPin.number));
-		if(currentPin.digital) {
-			lblPinType.setText("Digital");
-		} else {
-			lblPinType.setText("Analog");
-		}
-		lblPinMode.setText(currentPin.getMode().toString());
-		lblPinValue.setText(Double.toString(currentPin.getNormalizedValue()));
-	}
-	
-	/*
 	 * Toggle Current Pin Mode
 	 * @params called for changing pin mode from ActionListener
 	 * @run sets Pin Mode text to selected pin mode
 	 */
 	public void toggleCurrentPinMode() {
 		currentPin.togglePinMode();
-		lblPinMode.setText(currentPin.getMode().toString());
 	}
 	
 	/*
@@ -344,6 +374,5 @@ public class ArduinoGUI extends JFrame {
 	 */
 	public void toggleCurrentPinValue() {
 		currentPin.togglePinValue();
-		lblPinValue.setText(Double.toString(currentPin.getNormalizedValue()));
 	}
 }

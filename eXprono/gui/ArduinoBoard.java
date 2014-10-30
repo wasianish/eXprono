@@ -3,9 +3,10 @@ package eXprono.gui;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -200,9 +201,9 @@ public class ArduinoBoard {
 		}
 		byte[] received = nextByte();
 		if(received.length == 0) {
-			return -1;
+			return analogPins[pin].getValue();
 		}
-		return received[1] & 127 - (received[1] & -128) + (received[2] << 8);
+		return (received[1] & 127) - (received[1] & -128) + (received[2] << 8);
 	}
 	
 	public void pinMode(int pin, boolean input) {
@@ -230,7 +231,6 @@ public class ArduinoBoard {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			out = new byte[0];
 		}
 		return out;
@@ -248,6 +248,10 @@ public class ArduinoBoard {
 			}
 		}
 		return null;
+	}
+	
+	public Pin getFirstPin() {
+		return digitalPins[0];
 	}
 	
 	
