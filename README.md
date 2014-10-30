@@ -1,6 +1,4 @@
-eXprono
-
-The Basics
+# eXprono
 =======
 eXprono is a two part interface between a computer and an Arduino.
 
