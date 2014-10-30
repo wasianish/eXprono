@@ -1,6 +1,5 @@
 package eXprono.gui;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -8,9 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class GraphGUI extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private List<Pin> pins = new ArrayList<Pin>();
 	
@@ -18,10 +21,6 @@ public class GraphGUI extends JFrame {
 	
 	private int pixelsPerTimeStamp = 3;
 	private int pixelsPerFiveVolt = 50;
-	private long graphMillis = 50;
-	
-	private JPanel panel;
-	
 	public boolean active = false;
 	
 	public GraphGUI() {
