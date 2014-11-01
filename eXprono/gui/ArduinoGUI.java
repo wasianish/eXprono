@@ -66,7 +66,6 @@ public class ArduinoGUI extends JFrame {
 		@Override
 		public void run() {
 			while(true) {
-				long start = System.currentTimeMillis();
 				for(Pin pin: pinsToUpdate) {
 					pin.update();
 				}
@@ -77,7 +76,6 @@ public class ArduinoGUI extends JFrame {
 				if(graphGui != null && graphGui.active) {
 					graphGui.graph();
 				}
-				System.out.println(System.currentTimeMillis() - start);
 				try {
 					Thread.sleep(100);
 				} catch(Exception e) {
